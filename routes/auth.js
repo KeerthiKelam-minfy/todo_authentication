@@ -1,15 +1,18 @@
-import express from "express"
+import express from "express";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { users } from "../data/users.js";
 
-dotenv.config()
+dotenv.config();
 
-const router = express.Router()
+const SALT_ROUNDS = 10;
+
+const router = express.Router();
 
 // register endpoint
 
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
   // if the user already exists
@@ -18,10 +21,13 @@ router.post("/register", (req, res) => {
     return res.status(409).json({ message: "User already exists." });
   }
 
+  // hashing password using bcypt
+  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
   const newUser = {
     id: users.length + 1,
     username,
-    password,
+    password: hashedPassword,
   };
 
   users.push(newUser);
@@ -32,15 +38,18 @@ router.post("/register", (req, res) => {
 
 // Login endpoint
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   // checking if user exists
-  const user = users.find(
-    (u) => u.username === username && u.password === password
-  );
+  const user = users.find((u) => u.username === username);
   if (!user) {
     return res.status(401).json("Invalid username or password");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).json("Invalid password.");
   }
 
   // create JWT payload.
