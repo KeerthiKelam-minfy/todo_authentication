@@ -38,3 +38,8 @@
 ![alt text](image-10.png)
 ![alt text](image-11.png)
   
+### login as admin
+![alt text](image-12.png)
+
+### admin - all-todos
+![alt text](image-13.png)

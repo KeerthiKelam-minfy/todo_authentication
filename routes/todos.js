@@ -1,6 +1,7 @@
 import express from "express";
 import { todos } from "../data/todos.js";
 import authenticateToken from "../middlewares/auth.js";
+import authorizeAdmin from "../middlewares/authorizeAdmin.js";
 
 const router = express.Router();
 
@@ -49,5 +50,11 @@ router.delete("/todos/:id", authenticateToken, (req, res) => {
   const deleted = todos.splice(index, 1);
   res.json({ message: "todo successfully deleted", todo: deleted[0] });
 });
+
+// admin route to access all todos
+router.get("/admin/all-todos", authenticateToken, authorizeAdmin, (req, res) => {
+  res.json(todos)
+})
+
 
 export default router;

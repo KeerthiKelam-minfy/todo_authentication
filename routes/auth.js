@@ -28,6 +28,7 @@ router.post("/register", async (req, res) => {
     id: users.length + 1,
     username,
     password: hashedPassword,
+    role: 'user' // default role
   };
 
   users.push(newUser);
@@ -56,6 +57,7 @@ router.post("/login", async (req, res) => {
   const payload = {
     id: user.id,
     username: user.username,
+    role: user.role,
   };
 
   // JWT Sign token(expires in 1 hr)
